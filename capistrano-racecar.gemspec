@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email = ['so.zengtao@gmail.com']
   spec.summary = %q{Racecar integration for Capistrano}
   spec.description = %q{Racecar integration for Capistrano}
-  spec.homepage = 'https://github.com/helloworld/capistrano-racecar'
+  spec.homepage = 'https://github.com/helloworld1812/capistrano-racecar'
   spec.license = 'LGPL-3.0'
 
   spec.required_ruby_version     = '>= 2.0.0'
