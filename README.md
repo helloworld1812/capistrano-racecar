@@ -1,12 +1,12 @@
-[![Gem Version](https://badge.fury.io/rb/capistrano-sidekiq.svg)](http://badge.fury.io/rb/capistrano-sidekiq)
+[![Gem Version](https://badge.fury.io/rb/capistrano-racecar.svg)](http://badge.fury.io/rb/capistrano-racecar)
 
-# Capistrano::Sidekiq
+# Capistrano::Racecar
 
 Sidekiq integration for Capistrano
 
 ## Installation
 
-    gem 'capistrano-sidekiq', group: :development
+    gem 'capistrano-racecar', group: :development
 
 And then execute:
 
@@ -15,75 +15,32 @@ And then execute:
 
 ## Usage
 ```ruby
-    # Capfile
+# Capfile
+ 
+require 'capistrano/racecar'
 
-    require 'capistrano/sidekiq'
-    install_plugin Capistrano::Sidekiq  # Default sidekiq tasks
-    # Then select your service manager
-    install_plugin Capistrano::Sidekiq::Systemd 
-    # or  
-    install_plugin Capistrano::Sidekiq::Upstart  # tests needed
-    # or  
-    install_plugin Capistrano::Sidekiq::Monit  # tests needed
+install_plugin Capistrano::Racecar
 ```
 
 
 Configurable options, shown here with defaults:
 
 ```ruby
-:sidekiq_roles => :app
-:sidekiq_default_hooks => true
-:sidekiq_pid => File.join(shared_path, 'tmp', 'pids', 'sidekiq.pid') # ensure this path exists in production before deploying.
-:sidekiq_env => fetch(:rack_env, fetch(:rails_env, fetch(:stage)))
-:sidekiq_log => File.join(shared_path, 'log', 'sidekiq.log')
-
-# sidekiq systemd options
-:sidekiq_service_unit_name => 'sidekiq'
-:sidekiq_service_unit_user => :user # :system
-:sidekiq_enable_lingering => true
-:sidekiq_lingering_user => nil
-
-# sidekiq monit
-:sidekiq_monit_templates_path => 'config/deploy/templates'
-:sidekiq_monit_conf_dir => '/etc/monit/conf.d'
-:sidekiq_monit_use_sudo => true
-:monit_bin => '/usr/bin/monit'
-:sidekiq_monit_default_hooks => true
-:sidekiq_monit_group => nil
-:sidekiq_service_name => "sidekiq_#{fetch(:application)}" 
-
-:sidekiq_user => nil #user to run sidekiq as
+set_if_empty :racecar_task_path, 'config/racecar_task.yml'
+set_if_empty :racecar_role, :app
+set_if_empty :racecar_user, :system
+set_if_empty :racecar_ctl, 'bundle exec racecarctl'
+set_if_empty :racecar_pid_path, "#{fetch(:deploy_to)}/shared/tmp/pids"
 ```
 
-## Known issues with Capistrano 3
-
-There is a known bug that prevents sidekiq from starting when pty is true on Capistrano 3.
-```ruby
-set :pty,  false
-```
 
 ## Bundler
 
-If you'd like to prepend `bundle exec` to your sidekiq and sidekiqctl calls, modify the SSHKit command maps
+If you'd like to prepend `bundle exec` to your racecar calls, modify the SSHKit command maps
 in your deploy.rb file:
 ```ruby
 SSHKit.config.command_map[:sidekiq] = "bundle exec sidekiq"
 SSHKit.config.command_map[:sidekiqctl] = "bundle exec sidekiqctl"
-```
-
-
-## Customizing the monit sidekiq templates
-
-If you need change some config in redactor, you can
-
-```
-bundle exec rails generate capistrano:sidekiq:monit:template
-```
-
-If your deploy user has no need in `sudo` for using monit, you can disable it as follows:
-
-```ruby
-set :sidekiq_monit_use_sudo, false
 ```
 
 ## Contributing

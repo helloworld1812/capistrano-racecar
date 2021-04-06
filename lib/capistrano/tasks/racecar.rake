@@ -1,13 +1,24 @@
 git_plugin = self
 
-namespace :racecar do
+namespace :deploy do
+  before :starting, :check_racecar_hooks do
+    invoke 'racecar:add_hooks'
+  end
+end
 
+namespace :racecar do
   def consumer_list
     YAML.parse_file(fetch(:racecar_task_path)).to_ruby['tasks']
   end
 
   def build_pid_file(consumer_name)
     "#{fetch(:racecar_pid_path)}/#{consumer_name.downcase}.pid"
+  end
+
+  task :add_hooks do
+    after 'deploy:updated', 'racecar:stop'
+    after 'deploy:published', 'racecar:start'
+    after 'deploy:failed', 'racecar:restart'
   end
 
   desc 'Test'
@@ -47,6 +58,11 @@ namespace :racecar do
         end
       end
     end
+  end
+
+  task :restart do
+    invoke! 'racecar:stop'
+    invoke! 'racecar:start'
   end
 
 end
