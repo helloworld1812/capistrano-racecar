@@ -41,7 +41,7 @@ namespace :racecar do
       within current_path do
         with rails_env: fetch(:rails_env) do
           git_plugin.consumer_list.each do |item|
-            execute(:bundle, "exec racecar --daemonize #{item} --pidfile #{git_plugin.build_pid_file(item)}")
+            execute(:bundle, "exec racecar --daemonize #{item} --pidfile #{git_plugin.build_pid_file(item)} --log log/racecar.log")
           end
         end
       end
